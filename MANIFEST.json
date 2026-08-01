@@ -1,0 +1,115 @@
+{
+  "repository": "orgspace-auth-service",
+  "generated_at": "2026-08-01",
+  "file_count": 27,
+  "files": [
+    {
+      "path": ".env.example",
+      "size_bytes": 842
+    },
+    {
+      "path": ".gitignore",
+      "size_bytes": 88
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 2614
+    },
+    {
+      "path": "docker-compose.dev.yml",
+      "size_bytes": 909
+    },
+    {
+      "path": "docs/00-SCOPE-AND-BOUNDARIES.md",
+      "size_bytes": 2957
+    },
+    {
+      "path": "docs/01-PRD.md",
+      "size_bytes": 6986
+    },
+    {
+      "path": "docs/02-REQUIREMENTS.md",
+      "size_bytes": 6247
+    },
+    {
+      "path": "docs/03-USER-FLOWS.md",
+      "size_bytes": 4300
+    },
+    {
+      "path": "docs/04-DESIGN.md",
+      "size_bytes": 6281
+    },
+    {
+      "path": "docs/05-API.md",
+      "size_bytes": 6102
+    },
+    {
+      "path": "docs/06-DATA-MODEL.md",
+      "size_bytes": 6842
+    },
+    {
+      "path": "docs/07-AUTHORIZATION.md",
+      "size_bytes": 2484
+    },
+    {
+      "path": "docs/08-SECURITY.md",
+      "size_bytes": 4697
+    },
+    {
+      "path": "docs/09-EVENTS.md",
+      "size_bytes": 2293
+    },
+    {
+      "path": "docs/10-ERROR-CATALOG.md",
+      "size_bytes": 1780
+    },
+    {
+      "path": "docs/11-TESTING.md",
+      "size_bytes": 2711
+    },
+    {
+      "path": "docs/12-DEPLOYMENT.md",
+      "size_bytes": 2821
+    },
+    {
+      "path": "docs/13-ROADMAP.md",
+      "size_bytes": 1246
+    },
+    {
+      "path": "docs/14-ACCEPTANCE-CRITERIA.md",
+      "size_bytes": 2402
+    },
+    {
+      "path": "docs/IMPLEMENTATION-BACKLOG.md",
+      "size_bytes": 1774
+    },
+    {
+      "path": "docs/REFERENCES.md",
+      "size_bytes": 1140
+    },
+    {
+      "path": "docs/adr/ADR-001-TOKEN-STRATEGY.md",
+      "size_bytes": 1013
+    },
+    {
+      "path": "docs/adr/ADR-002-TENANT-CONTEXT.md",
+      "size_bytes": 799
+    },
+    {
+      "path": "docs/adr/ADR-003-PASSWORD-HASHING.md",
+      "size_bytes": 555
+    },
+    {
+      "path": "openapi/openapi.yaml",
+      "size_bytes": 9482
+    },
+    {
+      "path": "schemas/events/auth.account.created.v1.schema.json",
+      "size_bytes": 1021
+    },
+    {
+      "path": "schemas/events/auth.session.revoked.v1.schema.json",
+      "size_bytes": 1149
+    }
+  ]
+}

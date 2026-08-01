@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.orgspace.local/auth.session.revoked.v1.schema.json",
+  "title": "auth.session.revoked.v1",
+  "type": "object",
+  "required": [
+    "eventId",
+    "eventType",
+    "occurredAt",
+    "producer",
+    "data"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string"
+    },
+    "eventType": {
+      "const": "auth.session.revoked.v1"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer": {
+      "const": "orgspace-auth-service"
+    },
+    "correlationId": {
+      "type": "string"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "accountId",
+        "sessionId",
+        "reason"
+      ],
+      "properties": {
+        "accountId": {
+          "type": "string"
+        },
+        "sessionId": {
+          "type": "string"
+        },
+        "tenantId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

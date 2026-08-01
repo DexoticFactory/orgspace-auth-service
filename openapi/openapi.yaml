@@ -1,0 +1,344 @@
+openapi: 3.1.0
+info:
+  title: OrgSpace Auth Service API
+  version: 0.1.0
+  description: Initial contract for authentication, sessions, password recovery, and tenant selection.
+servers:
+  - url: https://api.example.com
+tags:
+  - name: Authentication
+  - name: Sessions
+  - name: Password
+  - name: MFA
+  - name: Discovery
+paths:
+  /v1/auth/login:
+    post:
+      tags: [Authentication]
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login flow result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /v1/auth/tenant/select:
+    post:
+      tags: [Authentication]
+      operationId: selectTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [challengeId, tenantId]
+              properties:
+                challengeId: { type: string }
+                tenantId: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Authenticated session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/auth/refresh:
+    post:
+      tags: [Authentication]
+      operationId: refresh
+      responses:
+        '200':
+          description: Rotated session token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/auth/logout:
+    post:
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+      operationId: logout
+      responses:
+        '204':
+          description: Logged out
+  /v1/auth/logout-all:
+    post:
+      tags: [Sessions]
+      security:
+        - bearerAuth: []
+      operationId: logoutAll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keepCurrentSession:
+                  type: boolean
+                  default: false
+      responses:
+        '204':
+          description: Sessions revoked
+  /v1/auth/sessions:
+    get:
+      tags: [Sessions]
+      security:
+        - bearerAuth: []
+      operationId: listSessions
+      responses:
+        '200':
+          description: Active sessions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Session'
+  /v1/auth/sessions/{sessionId}:
+    delete:
+      tags: [Sessions]
+      security:
+        - bearerAuth: []
+      operationId: revokeSession
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Revoked
+  /v1/auth/password/forgot:
+    post:
+      tags: [Password]
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identifier]
+              properties:
+                identifier: { type: string, minLength: 1, maxLength: 320 }
+      responses:
+        '202':
+          description: Accepted regardless of account existence
+  /v1/auth/password/reset:
+    post:
+      tags: [Password]
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, newPassword]
+              properties:
+                token: { type: string }
+                newPassword: { type: string, minLength: 10, maxLength: 1024 }
+      responses:
+        '204':
+          description: Password reset
+        '410':
+          description: Challenge expired
+  /.well-known/jwks.json:
+    get:
+      tags: [Discovery]
+      operationId: getJwks
+      responses:
+        '200':
+          description: JSON Web Key Set
+          headers:
+            Cache-Control:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [keys]
+                properties:
+                  keys:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Unauthorized:
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    RateLimited:
+      description: Too many attempts
+      headers:
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    LoginRequest:
+      type: object
+      required: [identifier, password, client]
+      properties:
+        tenantCode:
+          type: string
+          minLength: 2
+          maxLength: 50
+        identifier:
+          type: string
+          minLength: 1
+          maxLength: 320
+        password:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        client:
+          $ref: '#/components/schemas/ClientInfo'
+    ClientInfo:
+      type: object
+      required: [platform]
+      properties:
+        platform:
+          type: string
+          enum: [web, mobile]
+        installationId:
+          type: string
+          maxLength: 200
+        deviceName:
+          type: string
+          maxLength: 120
+        appVersion:
+          type: string
+          maxLength: 50
+    LoginResponse:
+      oneOf:
+        - $ref: '#/components/schemas/AuthenticatedResponse'
+        - $ref: '#/components/schemas/TenantSelectionResponse'
+        - $ref: '#/components/schemas/MfaRequiredResponse'
+        - $ref: '#/components/schemas/PasswordChangeRequiredResponse'
+    AuthenticatedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          required: [status, accessToken, expiresIn]
+          properties:
+            status:
+              const: authenticated
+            accessToken:
+              type: string
+            expiresIn:
+              type: integer
+              example: 600
+            activeTenant:
+              type: object
+              properties:
+                id: { type: string, format: uuid }
+                roles:
+                  type: array
+                  items: { type: string }
+    TenantSelectionResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          required: [status, challengeId, tenants, expiresIn]
+          properties:
+            status:
+              const: tenant_selection_required
+            challengeId: { type: string }
+            tenants:
+              type: array
+              items:
+                type: object
+                required: [id, displayName, roles]
+                properties:
+                  id: { type: string, format: uuid }
+                  displayName: { type: string }
+                  roles:
+                    type: array
+                    items: { type: string }
+            expiresIn: { type: integer }
+    MfaRequiredResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            status: { const: mfa_required }
+            challengeId: { type: string }
+            methods:
+              type: array
+              items:
+                type: string
+                enum: [totp, recovery_code]
+            expiresIn: { type: integer }
+    PasswordChangeRequiredResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            status: { const: password_change_required }
+            challengeId: { type: string }
+            expiresIn: { type: integer }
+    TokenResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          required: [accessToken, expiresIn]
+          properties:
+            accessToken: { type: string }
+            expiresIn: { type: integer }
+    Session:
+      type: object
+      required: [id, current, platform, createdAt, lastSeenAt]
+      properties:
+        id: { type: string, format: uuid }
+        current: { type: boolean }
+        platform: { type: string, enum: [web, mobile] }
+        deviceName: { type: string }
+        createdAt: { type: string, format: date-time }
+        lastSeenAt: { type: string, format: date-time }
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          required: [code, message, requestId]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            requestId: { type: string }
