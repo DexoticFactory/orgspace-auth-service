@@ -1,0 +1,19 @@
+# deps
+node_modules/
+
+# build
+dist/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+keys/
+
+# logs
+*.log
+
+# editor
+.idea/
+.vscode/
+*.swp
