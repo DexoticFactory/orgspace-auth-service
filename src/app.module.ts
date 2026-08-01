@@ -7,6 +7,7 @@ import { HealthModule } from './modules/health/health.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
 import { CryptoModule } from './common/crypto/crypto.module';
 import { CredentialsModule } from './modules/credentials/credentials.module';
+import { AuthenticationModule } from './modules/authentication/authentication.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CredentialsModule } from './modules/credentials/credentials.module';
     AccountsModule,
     CryptoModule,
     CredentialsModule,
+    AuthenticationModule,
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
