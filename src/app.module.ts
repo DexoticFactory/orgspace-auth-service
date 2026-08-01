@@ -4,12 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthModule } from './modules/health/health.module';
+import { AccountsModule } from './modules/accounts/accounts.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
 
     HealthModule,
+    AccountsModule,
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
