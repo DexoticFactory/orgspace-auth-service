@@ -8,6 +8,8 @@ import { AccountsModule } from './modules/accounts/accounts.module';
 import { CryptoModule } from './common/crypto/crypto.module';
 import { CredentialsModule } from './modules/credentials/credentials.module';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
+import { RecoveryModule } from './modules/recovery/recovery.module';
+import { TenantAccessModule } from './modules/tenant-access/tenant-access.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { AuthenticationModule } from './modules/authentication/authentication.mo
     CryptoModule,
     CredentialsModule,
     AuthenticationModule,
+    TenantAccessModule,
+    RecoveryModule,
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
