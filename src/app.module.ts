@@ -9,6 +9,7 @@ import { CryptoModule } from './common/crypto/crypto.module';
 import { CredentialsModule } from './modules/credentials/credentials.module';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
 import { RecoveryModule } from './modules/recovery/recovery.module';
+import { MfaModule } from './modules/mfa/mfa.module';
 import { TenantAccessModule } from './modules/tenant-access/tenant-access.module';
 
 @Module({
@@ -22,6 +23,7 @@ import { TenantAccessModule } from './modules/tenant-access/tenant-access.module
     AuthenticationModule,
     TenantAccessModule,
     RecoveryModule,
+    MfaModule,
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
